@@ -1,0 +1,58 @@
+{% extends 'management/main.html' %}
+{% load static %}
+{% block content %}
+
+
+<section class="ftco-section img" style="background-image: url('/static/images/bg_3.jpg')" data-stellar-background-ratio="0.5">
+			<div class="container">
+				<div class="mt-5 row d-flex">
+          <div class="col-md-7 ftco-animate makereservation mt-5 p-4 px-md-5 pb-md-5">
+          	<div class="heading-section ftco-animate mb-5 text-center">
+	          	<span class="subheading">SignIn</span>
+	          </div>
+            <form method="POST" action="">
+              {% csrf_token %}
+              <div class="row">
+                <div class="col-md-12">
+                  <div class="form-group">
+                    <label for="">User Name</label>
+                    <input type="text" name="username" class="form-control" placeholder="Your Username">
+                  </div>
+                </div>
+                <div class="col-md-12">
+                  <div class="form-group">
+                    <label for="">Password</label>
+                    <input type="password" name="password" class="form-control" placeholder="Your Password">
+                  </div>
+                </div>
+                
+                <div class="col-md-12 mt-3">
+                  <div class="form-group text-center">
+                    <input type="submit" value="LogIn" class="btn btn-primary py-3 px-5">
+                  </div>
+                </div>
+
+                {% for message in messages %}
+                <div class="col-md-12 mt-3">
+                  <div class="form-group text-center">
+                    <p class="border border-warning">
+                      {{message}}
+                    </p>
+                  </div>
+                </div>
+                {% endfor %}
+
+                <div class="col-md-12 mt-3">
+                  <div class="form-group text-center">
+                    Don't have an account? <a href="{% url 'register' %}" class="ml-2">Sign Up</a>
+                  </div>  
+                </div>
+
+              </div>
+            </form>
+          </div>
+        </div>
+			</div>
+		</section>
+    
+{% endblock %}

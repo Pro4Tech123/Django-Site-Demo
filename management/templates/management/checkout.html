@@ -1,0 +1,109 @@
+{% extends 'management/main.html' %}
+{% load static %}
+{% block content %}
+
+
+<section class="ftco-section img" style="background-image: url('/static/images/bg_3.jpg')" data-stellar-background-ratio="0.5">
+			<div class="container">
+				<div class="mt-5 row d-flex">
+          <div class="col-md-12 ftco-animate makereservation mt-5 p-4 px-md-5 pb-md-5">
+          	<div class="heading-section ftco-animate mb-5 text-center">
+	          	<span class="subheading">Checkout</span>
+	          </div>
+            <div class="col-md-12 d-flex align-self-stretch">
+              <div class="menus d-sm-flex ftco-animate align-items-stretch">
+                  <div class="menu-img img" style="background-image: url({{product.product_pic.url}});"></div>
+                  <div class="text d-flex align-items-center">
+                <br>
+                <div class="card card-body">
+                  {% csrf_token %}
+                  <h3>{{product.name}}</h3>
+                  <hr>
+                  <h4>Total: ${{product.price}}</h4>
+                  <hr>
+                  <div id="paypal-button-container"></div>
+                </div>
+              </div>
+            </div>
+           </div>
+          </div>
+        </div>
+			</div>
+		</section>
+    
+
+<script src="https://www.paypal.com/sdk/js?client-id=sb&currency=USD"></script>
+ <script>
+
+  function getCookie(name) {
+      var cookieValue = null;
+      if (document.cookie && document.cookie !== '') {
+          var cookies = document.cookie.split(';');
+          for (var i = 0; i < cookies.length; i++) {
+              var cookie = cookies[i].trim();
+              // Does this cookie string begin with the name we want?
+              if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                  cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                  break;
+              }
+          }
+      }
+      return cookieValue;
+  }
+  var csrftoken = getCookie('csrftoken');
+
+  var total = '{{product.price}}'
+  var productId = '{{product.id}}'
+  var orderId = '{{order.id}}'
+
+  function completeOrder(){
+    var url = "{% url 'complete' %}";
+
+
+    fetch(url, {
+      method: 'POST',
+      headers:{
+        'Content-type':'application/json',
+        'X-CSRFToken': document.getElementsByName('csrfmiddlewaretoken')[0].value
+      },
+      body: JSON.stringify({
+        'productId': productId
+      })
+
+    }).then(
+      (response) => response.json()
+    ).then((data) => {
+      console.log('Success:', data);
+      window.alert(data.message + data.order_id);
+
+    });
+  }
+
+        // Render the PayPal button into #paypal-button-container
+        paypal.Buttons({
+
+            // Set up the transaction
+            createOrder: function(data, actions) {
+                return actions.order.create({
+                    purchase_units: [{
+                        amount: {
+                            value: total
+                        }
+                    }]
+                });
+            },
+
+            // Finalize the transaction
+            onApprove: function(data, actions) {
+                return actions.order.capture().then(function(details) {
+                    // Show a success message to the buyer
+                    completeOrder()
+
+                });
+            }
+
+
+        }).render('#paypal-button-container');
+    </script>
+
+{% endblock %}
